@@ -1,20 +1,22 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
-import { GridContext } from "../context/GridContext";
 import CellModel from "../Models/Cell";
+import Grid from "../Models/Grid";
 import Cell from "./Cell";
 
 interface props {
     cells: CellModel[],
-    toggleCell: Function
+    toggleCell: Function,
 }
 
 export default function Row({ cells, toggleCell }: props) {
 
+    const [rowCells, setRowCells] = useState(cells);
+
     return (
         <StyledRow>
             {
-                cells.map((cell, index) => <Cell rowIndex={cell.rowIndex} toggleCell = {toggleCell} open={cell.open} key={index} columnIndex={cell.columnIndex} mine = {cell.mine} numberOfMinesAround = {0}/>)
+                rowCells.map((cell, index) => <Cell rowIndex={cell.rowIndex} toggleCell = {toggleCell} open={cell.open} key={index} columnIndex={cell.columnIndex} mine = {cell.mine} numberOfMinesAround = {cell.numberOfMinesAround} />)
             }
         </StyledRow>
     )

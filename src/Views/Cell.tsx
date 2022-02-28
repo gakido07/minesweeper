@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import CellModel from "../Models/Cell";
+import Grid from "../Models/Grid";
 
 type CellProps = CellModel & { toggleCell: Function }
 
-export default function Cell({ mine, rowIndex, columnIndex, numberOfMinesAround, open, toggleCell }: CellProps) {
+export default function Cell({ mine, rowIndex, columnIndex, numberOfMinesAround, open, toggleCell}: CellProps) {
 
     const [testOpen, setTestOpen] = useState(false);
 
@@ -12,13 +13,19 @@ export default function Cell({ mine, rowIndex, columnIndex, numberOfMinesAround,
         setTestOpen(state => !state);
     }
 
-    const toggleCellExecute = (): void => {
+    // useEffect(() => {
+    //     if(testOpen) {
+    //         toggleCellExecute(rowIndex - 1, columnIndex, )
+    //     }
+    // }, [testOpen])
+
+    const toggleCellExecute = (rowIndex: number, columnIndex: number): void => {
         toggleCell(rowIndex, columnIndex, toggleView);
     }
 
     return (
-        <StyledCell open = {testOpen} onClick = {() => toggleCellExecute()}>
-            {mine && testOpen && <div>m</div>}
+        <StyledCell open = {open} onClick = {() => toggleCell(rowIndex, columnIndex)}>
+            {mine && open && <div>m</div>}
             { !mine && numberOfMinesAround && <div>{ numberOfMinesAround }</div> }
         </StyledCell>
     );

@@ -11,7 +11,7 @@ export default class Grid {
         this.totalRows = totalRows;
         this.totalColumns = totalColumns;
 
-        for (let count = 0; count <= totalRows; count ++) {
+        for (let count = 0; count < totalRows; count ++) {
             this.rows.push(new Row(this.totalColumns, count));
         }
         console.log(this);
@@ -61,22 +61,16 @@ export default class Grid {
 
         let count = 0;
 
-        if(top.rowIndex > -1 && top.columnIndex > -1 && top.rowIndex < this.totalRows - 1 && top.columnIndex < this.totalColumns - 1) {
+        if(top.rowIndex > -1 && top.columnIndex > -1 && top.rowIndex < this.totalRows  && top.columnIndex < this.totalColumns) {
             if(this.rows[top.rowIndex].cells[top.columnIndex].mine) {
                 count++;
             }
-        }
-        if(left.rowIndex > -1 && left.columnIndex > -1 && top.rowIndex < this.totalRows - 1 && top.columnIndex < this.totalColumns - 1) {
             if(this.rows[left.rowIndex].cells[left.columnIndex].mine) {
                 count ++
             }
-        }
-        if(down.rowIndex > -1 && down.columnIndex > -1 && top.rowIndex < this.totalRows - 1 && top.columnIndex < this.totalColumns - 1) {
             if( this.rows[down.rowIndex].cells[down.columnIndex].mine ) {
                 count++;
             }
-        }
-        if(right.rowIndex > -1 && right.columnIndex > -1 && top.rowIndex < this.totalRows - 1 && top.columnIndex < this.totalColumns - 1) {
             if(this.rows[right.rowIndex].cells[right.columnIndex].mine) {
                 count++;
             }

@@ -1,36 +1,40 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { GridContext } from "../context/GridContext";
 import GridModel from '../Models/Grid';
 import Row from "./Row";
 
-const gameGrid = new GridModel(16, 16).populateCellsWithMineNumber();
+const gameGrid = new GridModel(16, 16);
 
 export default function Grid() {
 
-    const Grid = useContext(GridContext);
-
+    const [rows, setRows] = useState(gameGrid.rows);
 
     const toggleCell = (rowIndex: number, columnIndex: number, setStateFunction: Function) => {
-        // console.log(grid.toggleCell(rowIndex, columnIndex));
-        // setGrid(state => state.toggleCell(rowIndex, columnIndex));
-        // setStateFunction();
+        setRows(state => state.map(row => {
+            for (let rowCount = 0; rowCount < row.cells.length; rowCount++) {
+                let cell = row.cells[rowCount];
+                if(cell.rowIndex === rowIndex && cell.columnIndex === columnIndex) {
+                    cell.open = true;
+                }
+            }
+            return row;
+        }));
+        setStateFunction();
     }
 
     useEffect(() => {
         console.log("use effect fired")
-        // setGrid(gameGrid)
-    }, [gameGrid]);
+    }, [rows]);
 
     return (
         <StyledGrid>
             {
-                Grid.rows.map((row, index) => (
-                    <Row key={index} toggleCell = {toggleCell} cells={row.cells}/>
+                rows.map((row, index) => (
+                    <Row key={index} toggleCell = {toggleCell} cells={row.cells} />
                 ))
             }
         </StyledGrid>
-    )
+    );
 }
 
 const StyledGrid = styled.div`
@@ -44,13 +48,4 @@ const StyledGrid = styled.div`
     text-align: center;
     padding: 1em;
     justify-content: space-between;
-`
-
-const StyledCell = styled.div`
-    border: 0.2em beige solid;
-    height: 3em;
-    width: 5%;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-`
+`;

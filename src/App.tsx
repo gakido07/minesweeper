@@ -1,17 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './App.css';
 import styled from 'styled-components';
-import GridModel from './Models/Grid';
 import GridView from './Views/Grid';
-import { GridContext } from './context/GridContext';
 
 
 function App() {
   return (
     <StyledApp>
-      <GridContext.Provider value={new GridModel(16, 16)}>
         <GridView />
-      </GridContext.Provider>
     </StyledApp>
   );
 }
