@@ -1,7 +1,6 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import CellModel from "../Models/Cell";
-import Grid from "../Models/Grid";
 import Cell from "./Cell";
 
 interface props {
@@ -11,12 +10,10 @@ interface props {
 
 export default function Row({ cells, toggleCell }: props) {
 
-    const [rowCells, setRowCells] = useState(cells);
-
     return (
         <StyledRow>
             {
-                rowCells.map((cell, index) => <Cell rowIndex={cell.rowIndex} toggleCell = {toggleCell} open={cell.open} key={index} columnIndex={cell.columnIndex} mine = {cell.mine} numberOfMinesAround = {cell.numberOfMinesAround} />)
+                cells.map((cell, index) => <Cell {... cell} toggleCell = { toggleCell } key = {index} />)
             }
         </StyledRow>
     )

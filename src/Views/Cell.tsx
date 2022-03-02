@@ -5,28 +5,19 @@ import Grid from "../Models/Grid";
 
 type CellProps = CellModel & { toggleCell: Function }
 
-export default function Cell({ mine, rowIndex, columnIndex, numberOfMinesAround, open, toggleCell}: CellProps) {
-
-    const [testOpen, setTestOpen] = useState(false);
-
-    const toggleView = () => {
-        setTestOpen(state => !state);
-    }
-
-    // useEffect(() => {
-    //     if(testOpen) {
-    //         toggleCellExecute(rowIndex - 1, columnIndex, )
-    //     }
-    // }, [testOpen])
-
-    const toggleCellExecute = (rowIndex: number, columnIndex: number): void => {
-        toggleCell(rowIndex, columnIndex, toggleView);
-    }
+export default function Cell({ mine, rowIndex, columnIndex, flagged, numberOfMinesAround, open, toggleCell}: CellProps) {
 
     return (
-        <StyledCell open = {open} onClick = {() => toggleCell(rowIndex, columnIndex)}>
+        <StyledCell 
+        open = {open} 
+        onContextMenu = {(event) => {
+            event.preventDefault();
+            toggleCell(rowIndex, columnIndex, "flag")
+        }} 
+        onClick = {() => toggleCell(rowIndex, columnIndex, "open")}>
             {mine && open && <div>m</div>}
-            { !mine && numberOfMinesAround && <div>{ numberOfMinesAround }</div> }
+            { !open && flagged && <div> f </div> }
+            { !mine && open && numberOfMinesAround && <div>{ numberOfMinesAround }</div> }
         </StyledCell>
     );
 }

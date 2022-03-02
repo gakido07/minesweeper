@@ -1,8 +1,6 @@
 import React from 'react';
-import './App.css';
 import styled from 'styled-components';
 import GridView from './Views/Grid';
-
 
 function App() {
   return (
@@ -19,6 +17,6 @@ const StyledApp = styled.div`
   min-height: 100vh;
   height: fit-content;
   background-color: #252727;
-`
+`;
 
 export default App;

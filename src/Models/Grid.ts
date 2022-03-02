@@ -14,7 +14,6 @@ export default class Grid {
         for (let count = 0; count < totalRows; count ++) {
             this.rows.push(new Row(this.totalColumns, count));
         }
-        console.log(this);
     }
 
     extractNumberOfMines():  number {
@@ -36,7 +35,6 @@ export default class Grid {
                 this.rows[cell.rowIndex].cells[cell.columnIndex].numberOfMinesAround = this.evaluate(cell.columnIndex, cell.rowIndex);
             })
         });
-
         return this;
     }
 
@@ -46,7 +44,6 @@ export default class Grid {
             row.cells.forEach(cell => {
                 if(cell.columnIndex === columnIndex && cell.rowIndex === rowIndex) {
                     cell.open = true;
-                    console.log(cell.open);
                 }
             });
         })
@@ -54,29 +51,59 @@ export default class Grid {
     }
 
     private evaluate(columnIndex: number, rowIndex: number): number {
-        const top: CellCoordinates = {rowIndex: rowIndex - 1, columnIndex: columnIndex};
-        const left: CellCoordinates = {rowIndex: rowIndex, columnIndex: columnIndex - 1};
-        const down: CellCoordinates = { rowIndex: rowIndex + 1, columnIndex: columnIndex };
-        const right: CellCoordinates = { rowIndex: rowIndex, columnIndex: columnIndex + 1 };
+
+        /* This function calculates the number mines in all cells surrounding the current cell in the iteration using eight 
+        *  th eight cardinal points as variables  */
+
+        //TODO Think of a more efficient way to refactor this function
+
+        const N: CellCoordinates = {rowIndex: rowIndex - 1, columnIndex: columnIndex};
+        const W: CellCoordinates = {rowIndex: rowIndex, columnIndex: columnIndex - 1};
+        const S: CellCoordinates = { rowIndex: rowIndex + 1, columnIndex: columnIndex };
+        const E: CellCoordinates = { rowIndex: rowIndex, columnIndex: columnIndex + 1 };
+        const NW: CellCoordinates = {rowIndex: rowIndex - 1, columnIndex: columnIndex - 1};
+        const SW: CellCoordinates = {rowIndex: rowIndex + 1, columnIndex: columnIndex - 1 };
+        const SE: CellCoordinates = { rowIndex: rowIndex + 1, columnIndex: columnIndex + 1 };
+        const NE: CellCoordinates = { rowIndex: rowIndex - 1, columnIndex: columnIndex + 1 };
+
+        const unProcessedCoordinates = [N, W, S, E, NW, SW, SE, NE];
 
         let count = 0;
 
-        if(top.rowIndex > -1 && top.columnIndex > -1 && top.rowIndex < this.totalRows  && top.columnIndex < this.totalColumns) {
-            if(this.rows[top.rowIndex].cells[top.columnIndex].mine) {
-                count++;
-            }
-            if(this.rows[left.rowIndex].cells[left.columnIndex].mine) {
-                count ++
-            }
-            if( this.rows[down.rowIndex].cells[down.columnIndex].mine ) {
-                count++;
-            }
-            if(this.rows[right.rowIndex].cells[right.columnIndex].mine) {
-                count++;
-            }
-        }
 
-        // console.log(count);
+        unProcessedCoordinates.forEach(coordinate => {
+            if(coordinate.rowIndex > -1 && coordinate.columnIndex > -1 && coordinate.rowIndex < this.totalRows && coordinate.columnIndex < this.totalColumns) {
+                if(this.rows[coordinate.rowIndex].cells[coordinate.columnIndex].mine) {
+                    count++;
+                }
+            }
+        });
+        
         return count;
     }
+}
+
+
+export function toggleCells (rows: Row[], rowIndex: number, columnIndex: number, action: string): Row[] {
+    return rows.map(row => {
+        if(row.rowIndex === rowIndex) {
+            let cell = row.cells[columnIndex];
+            if(cell.rowIndex === rowIndex && cell.columnIndex === columnIndex) {
+                if (action === 'open') {
+                    for (let count = 0; count < 6; count++) {
+                        if(rows[rowIndex - count].cells[columnIndex].mine) {
+                            break;
+                        }
+                        rows[rowIndex - count].cells[columnIndex].open = true;
+                        // rows[rowIndex + 1].cells[columnIndex].open = true;
+                        cell.open = true;
+                    }
+                }
+                if ( action === 'flag') {
+                    cell.flagged = true;
+                }
+            }
+        }
+        return row;
+    });
 }

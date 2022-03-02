@@ -1,30 +1,19 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import GridModel from '../Models/Grid';
+import GridModel, { toggleCells } from '../Models/Grid';
 import Row from "./Row";
 
-const gameGrid = new GridModel(16, 16);
+const gameGrid = new GridModel(16, 16).populateCellsWithMineNumber();
 
 export default function Grid() {
 
+    //TODO Refactor code to use context and reducer
+
     const [rows, setRows] = useState(gameGrid.rows);
 
-    const toggleCell = (rowIndex: number, columnIndex: number, setStateFunction: Function) => {
-        setRows(state => state.map(row => {
-            for (let rowCount = 0; rowCount < row.cells.length; rowCount++) {
-                let cell = row.cells[rowCount];
-                if(cell.rowIndex === rowIndex && cell.columnIndex === columnIndex) {
-                    cell.open = true;
-                }
-            }
-            return row;
-        }));
-        setStateFunction();
+    const toggleCell = (rowIndex: number, columnIndex: number, action: string) => {
+        setRows(state => toggleCells(state, rowIndex, columnIndex, action));
     }
-
-    useEffect(() => {
-        console.log("use effect fired")
-    }, [rows]);
 
     return (
         <StyledGrid>
