@@ -32,7 +32,7 @@ export default class Grid {
     populateCellsWithMineNumber(): Grid {
         this.rows.forEach(row => {
             row.cells.forEach(cell => {
-                this.rows[cell.rowIndex].cells[cell.columnIndex].numberOfMinesAround = this.evaluate(cell.columnIndex, cell.rowIndex);
+                this.rows[cell.rowIndex].cells[cell.columnIndex].numberOfMinesAround = this.evaluateNumberOfMines(cell.columnIndex, cell.rowIndex);
             })
         });
         return this;
@@ -50,26 +50,16 @@ export default class Grid {
         return this;
     }
 
-    private evaluate(columnIndex: number, rowIndex: number): number {
+    private evaluateNumberOfMines(rowIndex: number, columnIndex: number): number {
 
         /* This function calculates the number mines in all cells surrounding the current cell in the iteration using eight 
-        *  th eight cardinal points as variables  */
+        *  cardinal points as variables  */
 
         //TODO Think of a more efficient way to refactor this function
 
-        const N: CellCoordinates = {rowIndex: rowIndex - 1, columnIndex: columnIndex};
-        const W: CellCoordinates = {rowIndex: rowIndex, columnIndex: columnIndex - 1};
-        const S: CellCoordinates = { rowIndex: rowIndex + 1, columnIndex: columnIndex };
-        const E: CellCoordinates = { rowIndex: rowIndex, columnIndex: columnIndex + 1 };
-        const NW: CellCoordinates = {rowIndex: rowIndex - 1, columnIndex: columnIndex - 1};
-        const SW: CellCoordinates = {rowIndex: rowIndex + 1, columnIndex: columnIndex - 1 };
-        const SE: CellCoordinates = { rowIndex: rowIndex + 1, columnIndex: columnIndex + 1 };
-        const NE: CellCoordinates = { rowIndex: rowIndex - 1, columnIndex: columnIndex + 1 };
-
-        const unProcessedCoordinates = [N, W, S, E, NW, SW, SE, NE];
+        const unProcessedCoordinates = getSurroundingCellInfo(rowIndex, columnIndex);         
 
         let count = 0;
-
 
         unProcessedCoordinates.forEach(coordinate => {
             if(coordinate.rowIndex > -1 && coordinate.columnIndex > -1 && coordinate.rowIndex < this.totalRows && coordinate.columnIndex < this.totalColumns) {
@@ -78,9 +68,23 @@ export default class Grid {
                 }
             }
         });
-        
+
         return count;
     }
+
+}
+
+const getSurroundingCellInfo = (rowIndex: number, columnIndex: number): CellCoordinates[] => {
+    const N: CellCoordinates = {rowIndex: rowIndex - 1, columnIndex: columnIndex};
+    const W: CellCoordinates = {rowIndex: rowIndex, columnIndex: columnIndex - 1};
+    const S: CellCoordinates = { rowIndex: rowIndex + 1, columnIndex: columnIndex };
+    const E: CellCoordinates = { rowIndex: rowIndex, columnIndex: columnIndex + 1 };
+    const NW: CellCoordinates = {rowIndex: rowIndex - 1, columnIndex: columnIndex - 1};
+    const SW: CellCoordinates = {rowIndex: rowIndex + 1, columnIndex: columnIndex - 1 };
+    const SE: CellCoordinates = { rowIndex: rowIndex + 1, columnIndex: columnIndex + 1 };
+    const NE: CellCoordinates = { rowIndex: rowIndex - 1, columnIndex: columnIndex + 1 };
+
+    return [N, W, S, E, NW, SW, SE, NE];
 }
 
 
@@ -90,16 +94,18 @@ export function toggleCells (rows: Row[], rowIndex: number, columnIndex: number,
             let cell = row.cells[columnIndex];
             if(cell.rowIndex === rowIndex && cell.columnIndex === columnIndex) {
                 if (action === 'open') {
-                    for (let count = 0; count < 6; count++) {
-                        if(rows[rowIndex - count].cells[columnIndex].mine) {
-                            break;
-                        }
-                        rows[rowIndex - count].cells[columnIndex].open = true;
-                        // rows[rowIndex + 1].cells[columnIndex].open = true;
-                        cell.open = true;
+                    cell.open = true;
+                    if(!cell.mine) {
+                        const unProcessedCoordinates = getSurroundingCellInfo(rowIndex, columnIndex);
+                        unProcessedCoordinates.forEach(coordinate => {
+                            if(coordinate.rowIndex > -1 && coordinate.columnIndex > -1 && coordinate.rowIndex < rows.length && coordinate.columnIndex < rows[0].cells.length) {
+                            rows[coordinate.rowIndex].cells[coordinate.columnIndex].open = true;
+                        }                    
+                    });
                     }
                 }
-                if ( action === 'flag') {
+
+                if (action === 'flag') {
                     cell.flagged = true;
                 }
             }
