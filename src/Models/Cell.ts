@@ -4,23 +4,19 @@ export default class Cell {
     flagged: boolean;
     rowIndex: number;
     columnIndex: number;
-    numberOfMinesAround: Number
+    numberOfMinesAround: Number;
 
     constructor (rowIndex: number, columnIndex: number) {
         this.open = false;
         this.flagged = false;
         this.rowIndex = rowIndex;
         this.columnIndex = columnIndex;
-        this.mine = isEven(Math.round(Math.random() * 10));
+        this.mine = Math.random() < 0.5;
         this.numberOfMinesAround = 4;
     }
 }
 
-export interface CellCoordinates {
+export interface CellCoordinate {
     rowIndex: number;
     columnIndex: number;
-}
-
-const isEven = (number: number): boolean => {
-    return (number % 2) === 0 ? true : false;
 }

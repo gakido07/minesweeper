@@ -1,21 +1,23 @@
-import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
+import { FLAG_CELL, TOGGLE_CELL } from "../context/reducers/grid.actions";
 import CellModel from "../Models/Cell";
-import Grid from "../Models/Grid";
 
-type CellProps = CellModel & { toggleCell: Function }
+type CellProps = CellModel;
 
-export default function Cell({ mine, rowIndex, columnIndex, flagged, numberOfMinesAround, open, toggleCell}: CellProps) {
+export default function Cell({ mine, rowIndex, columnIndex, flagged, numberOfMinesAround, open }: CellProps) {
+
+    const dispatch = useDispatch();
 
     return (
         <StyledCell 
         open = {open} 
         onContextMenu = {(event) => {
             event.preventDefault();
-            toggleCell(rowIndex, columnIndex, "flag")
-        }} 
-        onClick = {() => toggleCell(rowIndex, columnIndex, "open")}>
-            {mine && open && <div>m</div>}
+            dispatch(FLAG_CELL({rowIndex: rowIndex, columnIndex: columnIndex}));
+        }}
+        onClick = {() => dispatch(TOGGLE_CELL({rowIndex: rowIndex, columnIndex: columnIndex}))}>
+            { mine && open && <div>m</div> }
             { !open && flagged && <div> f </div> }
             { !mine && open && numberOfMinesAround && <div>{ numberOfMinesAround }</div> }
         </StyledCell>
@@ -32,7 +34,6 @@ const StyledCell = styled.div<{open: boolean}>`
     justify-content: center;
     align-items: center;
     color: white;
-
 
     :hover{
         cursor: pointer;
