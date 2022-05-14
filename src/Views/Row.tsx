@@ -5,15 +5,14 @@ import Cell from "./Cell";
 
 interface props {
     cells: CellModel[],
-    toggleCell: Function,
 }
 
-export default function Row({ cells, toggleCell }: props) {
+export default function Row({ cells }: props) {
 
     return (
         <StyledRow>
             {
-                cells.map((cell, index) => <Cell {... cell} toggleCell = { toggleCell } key = {index} />)
+                cells.map((cell, index) => <Cell {... cell} key = {index} />)
             }
         </StyledRow>
     )

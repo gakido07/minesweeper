@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import styled from 'styled-components';
+
+import { GridContext } from './context/grid.context';
+import { GridReducer } from './context/reducers/GridReducer';
+import GridModel, { GridFactory } from './Models/Grid';
 import GridView from './Views/Grid';
 
 function App() {
+
+  const [ grid, dispatch ] = useReducer(GridReducer, {
+    ... new GridFactory(16, 16).build()
+  })
+
   return (
     <StyledApp>
-        <GridView />
+        <GridContext.Provider value={{
+          grid: grid,
+          control: dispatch
+        }}>
+          <GridView />
+        </GridContext.Provider>
     </StyledApp>
   );
 }
