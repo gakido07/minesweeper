@@ -1,10 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-
-import store, { IRootState } from "../context/store";
-import useTypedSelector from "../hooks/useTypedSelector";
-import DIFFICULTY from "../logic/game.difficulty";
-import GridModel from '../Models/Grid';
+import GridModel, { toggleCells } from '../Models/Grid';
 import Row from "./Row";
 
 const gameGrid = new GridModel(16, 16).populateCellsWithMineNumber();
@@ -13,13 +9,17 @@ export default function Grid() {
 
     //TODO Refactor code to use context and reducer
 
-    const { rows } = useTypedSelector(state => state.grid);
+    const [rows, setRows] = useState(gameGrid.rows);
+
+    const toggleCell = (rowIndex: number, columnIndex: number, action: string) => {
+        setRows(state => toggleCells(state, rowIndex, columnIndex, action));
+    }
 
     return (
         <StyledGrid>
             {
                 rows.map((row, index) => (
-                    <Row key={index} cells={row.cells} />
+                    <Row key={index} toggleCell = {toggleCell} cells={row.cells} />
                 ))
             }
         </StyledGrid>

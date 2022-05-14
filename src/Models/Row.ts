@@ -7,7 +7,7 @@ export default class Row {
     constructor(columnNumber: number, rowIndex: number) {
         this.cells = [];
         this.rowIndex = rowIndex;
-        for (let count = 0; count < columnNumber; count ++) {
+        for (let count = 0; count < columnNumber; count ++ ) {
             this.cells.push(new Cell(rowIndex, count));
         }
     }
