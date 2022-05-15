@@ -1,4 +1,5 @@
-import Cell, { CellCoordinates } from "./Cell";
+import { CellCoordinates } from "./Cell";
+import _ from "lodash";
 import Row from "./Row";
 
 export default interface Grid {
@@ -49,27 +50,60 @@ export class GridFactory {
 
     private evaluateNumberOfMines(rowIndex: number, columnIndex: number): number {
 
-        /* This function calculates the number mines in all cells surrounding the current cell in the iteration using eight 
-        *  cardinal points as variables  */
-
-        //TODO Think of a more efficient way to refactor this function
-
-        const unProcessedCoordinates = getSurroundingCellInfo(rowIndex, columnIndex);         
+        const unProcessedCoordinates = getSurroundingCellInfo(rowIndex, columnIndex, {
+            rows: this.rows,
+            totalColumns: this.totalColumns,
+            totalRows: this.totalRows
+         });         
 
         let count = 0;
 
         unProcessedCoordinates.forEach(coordinate => {
-            if(coordinate.rowIndex > -1 && coordinate.columnIndex > -1 && coordinate.rowIndex < this.totalRows && coordinate.columnIndex < this.totalColumns) {
+            
                 if(this.rows[coordinate.rowIndex].cells[coordinate.columnIndex].mine) {
                     count++;
                 }
-            }
         });
         return count;
     }
 }
 
-const getSurroundingCellInfo = (rowIndex: number, columnIndex: number): CellCoordinates[] => {
+const recursiveGetSurroundingCellInfo = (rowIndex: number, columnIndex: number, grid: Grid): CellCoordinates[] => {
+    const validCells = getSurroundingCellInfo(rowIndex, columnIndex, grid);
+    const processed:CellCoordinates [] = [];
+    processed.push({
+        rowIndex: rowIndex,
+        columnIndex: columnIndex
+    });
+    const more: CellCoordinates[] = []
+    for (let count = 0; count < validCells.length; count++) {
+        const coordinateInFocus = validCells[count];
+        if (
+            !processed.some(cell => _.isEqual(({
+                rowIndex: coordinateInFocus.rowIndex,
+                columnIndex: coordinateInFocus.columnIndex
+            }), 
+            cell))
+        ) {
+            console.log(coordinateInFocus);
+            const inFocus = getSurroundingCellInfo(coordinateInFocus.rowIndex, coordinateInFocus.columnIndex, grid);
+            inFocus.forEach(focus => {
+                if (!more.some(cell => _.isEqual(({
+                    rowIndex: focus.rowIndex,
+                    columnIndex: focus.columnIndex
+                }), 
+                cell))) {
+                    more.push(focus);
+                }
+            })
+        }
+
+    }
+    console.log(more);
+    return more;
+}
+
+const getSurroundingCellInfo = (rowIndex: number, columnIndex: number, grid: Grid): CellCoordinates[] => {
     const N: CellCoordinates = {rowIndex: rowIndex - 1, columnIndex: columnIndex};
     const W: CellCoordinates = {rowIndex: rowIndex, columnIndex: columnIndex - 1};
     const S: CellCoordinates = {rowIndex: rowIndex + 1, columnIndex: columnIndex };
@@ -78,17 +112,20 @@ const getSurroundingCellInfo = (rowIndex: number, columnIndex: number): CellCoor
     const SW: CellCoordinates = {rowIndex: rowIndex + 1, columnIndex: columnIndex - 1};
     const SE: CellCoordinates = {rowIndex: rowIndex + 1, columnIndex: columnIndex + 1};
     const NE: CellCoordinates = {rowIndex: rowIndex - 1, columnIndex: columnIndex + 1};
-    return [N, W, S, E, NW, SW, SE, NE];
+    return [N, W, S, E, NW, SW, SE, NE].filter(coordinate => 
+        (coordinate.rowIndex > -1 && coordinate.columnIndex > -1 && coordinate.rowIndex < grid.totalRows && coordinate.columnIndex < grid.totalColumns)
+        );
 }
 
 
 export const toggleCell = (rowIndex: number, columnIndex: number, grid: Grid): Grid => {
-    grid.rows.forEach(row => {
-        row.cells.forEach(cell => {
-            if(cell.columnIndex === columnIndex && cell.rowIndex === rowIndex) {
-                cell.open = true;
-            }
-        });
+    console.log(getSurroundingCellInfo(rowIndex, columnIndex, grid));
+    const cells = recursiveGetSurroundingCellInfo(rowIndex, columnIndex, grid)
+    cells.forEach(cell => {
+        if (!grid.rows[cell.rowIndex].cells[cell.columnIndex].open) {
+            grid.rows[cell.rowIndex].cells[cell.columnIndex].open = true;
+        }
     })
+
     return grid;
 }

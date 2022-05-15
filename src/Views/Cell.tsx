@@ -2,11 +2,18 @@ import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { GridContext } from "../context/grid.context";
 import CellModel from "../Models/Cell";
-import Grid, { toggleCell } from "../Models/Grid";
+import { toggleCell } from "../Models/Grid";
 
 type CellProps = CellModel 
 
-export default function Cell({ mine, rowIndex, columnIndex, flagged, numberOfMinesAround, open}: CellProps) {
+export default function Cell({ 
+    mine,
+    rowIndex,
+    columnIndex,
+    flagged,
+    numberOfMinesAround,
+    open 
+}: CellProps) {
 
     const { grid ,control } = useContext(GridContext);
 
@@ -18,12 +25,17 @@ export default function Cell({ mine, rowIndex, columnIndex, flagged, numberOfMin
             control({
                 type: 'MUTATE_GRID',
                 payload: toggleCell(rowIndex, columnIndex, grid)
-            })
+            });
         }} 
-        onClick = {() => ''}>
+        onClick = {
+            () => control({
+                type: 'MUTATE_GRID',
+                payload: toggleCell(rowIndex, columnIndex, grid)
+            })
+        }>
             {mine && open && <div>m</div>}
-            { !open && flagged && <div> f </div> }
-            { !mine && open && numberOfMinesAround && <div>{ numberOfMinesAround }</div> }
+            {!open && flagged && <div> f </div> }
+            {!mine && open && numberOfMinesAround && <div>{numberOfMinesAround}</div> }
         </StyledCell>
     );
 }
